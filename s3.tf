@@ -2,7 +2,7 @@ locals {
   bucket_name = local.domain_name
 }
 
-resource "aws_s3_bucket" "lego_bucket" {
+resource "aws_s3_bucket" "website_bucket" {
   bucket = local.bucket_name
   acl    = "private"
 
@@ -16,15 +16,15 @@ resource "aws_s3_bucket" "lego_bucket" {
 data "aws_iam_policy_document" "s3_policy" {
   statement {
     actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.lego_bucket.arn}/*"]
+    resources = ["${aws_s3_bucket.website_bucket.arn}/*"]
     principals {
       type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.storybook_access_identy.iam_arn]
+      identifiers = [aws_cloudfront_origin_access_identity.website_access_identy.iam_arn]
     }
   }
 }
 
-resource "aws_s3_bucket_policy" "lego_bucket" {
-  bucket = aws_s3_bucket.lego_bucket.id
+resource "aws_s3_bucket_policy" "website_bucket" {
+  bucket = aws_s3_bucket.website_bucket.id
   policy = data.aws_iam_policy_document.s3_policy.json
 }
